@@ -5,21 +5,25 @@ from typing import Any, Optional
 
 import redis
 
+from core.cache.exceptions import RedisConnectDbNumberError
 from core.common.type_checker import is_picklable, is_unpicklable
 
 logger = logging.getLogger(__name__)
 
 
 # TODO: use cached_property to improve pickle things
-class RedisClient(object):
+class RedisClient:
     connection: Optional[redis.Redis] = None
 
     def __init__(
         self, endpoint: str, port: int = 6379, db_number: Optional[int] = None
     ):
         # Note: db=0, Django ; db=1, iTunes Daemon
-        if not isinstance(db_number, int) or not (0 <= db_number <= 15):
-            raise Exception("Redis db number Fail %s" % str(db_number))
+        if not isinstance(db_number, int):
+            raise TypeError(f"Redis db number must int type, db_number type: {type(db_number)}")
+        if db_number < 0 or db_number > 15:
+            raise RedisConnectDbNumberError(f"Redis db number out of range, db_number: {db_number}")
+
         self.pool = redis.ConnectionPool(host=endpoint, port=port, db=db_number)
         # Pool Observation
         logger.debug("init successful, pid: %s, id: %s", self.pool.pid, id(self.pool))
@@ -43,6 +47,6 @@ class RedisClient(object):
     def set(self, name: str, value: Any, timeout: int) -> bool:
         copy_value = copy.copy(value)
         if not is_picklable(copy_value):
-            raise TypeError("The value is not picklable, value: %s" % (repr(value),))
+            raise TypeError(f"The value is not picklable, value: {value}")
         pickle_value = pickle.dumps(copy_value)
         return self.conn.set(name, pickle_value, ex=timeout)

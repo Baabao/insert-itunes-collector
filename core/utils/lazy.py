@@ -1,4 +1,4 @@
-# type: ignore
+# pylint: disable=protected-access
 import abc
 import copy
 import operator
@@ -83,9 +83,9 @@ class LazyObject(abc.ABC):
             # If uninitialized, copy the wrapper. Use type(self), not
             # self.__class__, because the latter is proxied.
             return type(self)()
-        else:
-            # If initialized, return a copy of the wrapped object.
-            return copy.copy(self._wrapped)
+
+        # If initialized, return a copy of the wrapped object.
+        return copy.copy(self._wrapped)
 
     def __deepcopy__(self, memo):
         if self._wrapped is empty:

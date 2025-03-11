@@ -38,7 +38,7 @@ _REQUIRED_KEYS = [k for k, _ in _LAYERS.items()]
 _DYNAMIC_KEYS = [v["name"] for _, v in _LAYERS.items()]
 
 
-class BaseClass(object):
+class BaseClass:
     def __init__(self, classtype) -> None:
         self._type = classtype
 
@@ -90,7 +90,7 @@ class Execution(ExecutionInterface):
 
     def _load_config(self, json_path: str) -> None:
         try:
-            with open(json_path, "r") as file:
+            with open(json_path, "r", encoding="utf-8") as file:
                 data = json.load(file)
             self._validate_config(data)
             self._config_data = data

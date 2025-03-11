@@ -1,4 +1,4 @@
-# type: ignore
+# pylint: disable=no-name-in-module, multiple-statements, fixme, line-too-long
 from psycopg2._psycopg import Error as DatabaseException
 
 from core.conf import settings
@@ -14,12 +14,6 @@ class Connection(LazyObject):
         self._wrapped = DatabaseManager(settings.DATABASE)
         # Note: allow thread sharing, cause already lock CUD with lock decorator each sql operation
         self._wrapped.inc_thread_sharing()
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        a = 1
 
 
 connection = Connection()

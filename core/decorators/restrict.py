@@ -10,7 +10,7 @@ def env_func(env: str, only: Union[str, List, Tuple]):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             if env not in only:
-                return
+                return None
             return func(*args, **kwargs)
 
         return wrapper

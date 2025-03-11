@@ -1,4 +1,4 @@
-# pylint: disable=no-name-in-module
+# pylint: disable=no-name-in-module, consider-using-f-string, no-member, inconsistent-return-statements, no-else-return
 # type: ignore
 import _thread
 import os
@@ -21,8 +21,8 @@ try:
     import psycopg2.extras
     from psycopg2._psycopg import connection as DatabaseConnection
 
-except ImportError as e:
-    raise ImproperlyConfigured("Error loading psycopg2 module: %s" % e)
+except ImportError as exc:
+    raise ImproperlyConfigured(f"Error loading psycopg2 module: {exc}") from exc
 
 
 # Note: no use async_unsafe function, cause already control single thread outside
@@ -209,8 +209,7 @@ class DatabaseManager(metaclass=SingletonInstance):
             raise DatabaseError(
                 "DatabaseWrapper objects created in a "
                 "thread can only be used in that same thread. The object "
-                "was created in thread id %s and this is thread id %s."
-                % (self._thread_ident, _thread.get_ident())
+                f"was created in thread id {self._thread_ident} and this is thread id {_thread.get_ident()}."
             )
 
     # ### validation methods ###
@@ -310,7 +309,7 @@ class DatabaseManager(metaclass=SingletonInstance):
         rollback or commit. Do nothing if savepoints are not supported.
         """
         if not self._savepoint_allowed():
-            return
+            return None
 
         thread_ident = _thread.get_ident()
         tid = str(thread_ident).replace("-", "")

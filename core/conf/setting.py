@@ -12,14 +12,14 @@ VALID_SETTINGS = ("local", "test", "staging", "prod")
 
 class Settings:
     def __init__(self, settings_module):
-        self.SETTINGS_MODULE = settings_module
+        self.setting_module = settings_module
 
         for base_key in dir(globe_setting):
             if not self._is_definitive_setting(base_key):
                 continue
             setattr(self, base_key, getattr(globe_setting, base_key))
 
-        mod = importlib.import_module(self.SETTINGS_MODULE)
+        mod = importlib.import_module(self.setting_module)
 
         self._explicit_settings = set()
 

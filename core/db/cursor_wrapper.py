@@ -1,3 +1,4 @@
+# pylint: disable=no-else-return, inconsistent-return-statements
 import functools
 import traceback
 
@@ -25,7 +26,7 @@ class CursorWrapper:
     def __enter__(self):
         return self
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, exc_type, exc_value, exc_traceback):
         # Close instead of passing through to avoid backend-specific behavior
         # (#17671). Catch errors liberally because errors in cleanup code
         # aren't useful.
@@ -73,15 +74,12 @@ class CursorWrapper:
 
     def _execute(self, sql, params, *ignored_wrapper_args):
         self.db.validate_no_broken_transaction()
-        try:
-            with self.db.wrap_database_errors:
-                if params is None:
-                    # params default might be backend specific.
-                    return self.cursor.execute(sql)
-                else:
-                    return self.cursor.execute(sql, params)
-        except Exception as _:
-            print(traceback.format_exc(10))
+        with self.db.wrap_database_errors:
+            if params is None:
+                # params default might be backend specific.
+                return self.cursor.execute(sql)
+            else:
+                return self.cursor.execute(sql, params)
 
     def _executemany(self, sql, param_list, *ignored_wrapper_args):
         self.db.validate_no_broken_transaction()

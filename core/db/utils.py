@@ -22,15 +22,11 @@ class Error(Exception):
     single except statement.
     """
 
-    pass
-
 
 class InterfaceError(Error):
     """
     Exception raised for errors that are related to the database interface rather than the database itself.
     """
-
-    pass
 
 
 class DatabaseError(Error):
@@ -38,16 +34,12 @@ class DatabaseError(Error):
     Exception raised for errors that are related to the database.
     """
 
-    pass
-
 
 class DataError(DatabaseError):
     """
     Exception raised for errors that are due to problems with the processed data like division by zero, numeric value
     out of range, etc.
     """
-
-    pass
 
 
 class OperationalError(DatabaseError):
@@ -57,15 +49,11 @@ class OperationalError(DatabaseError):
     be processed, a memory allocation error occurred during processing, etc.
     """
 
-    pass
-
 
 class IntegrityError(DatabaseError):
     """
     Exception raised when the relational integrity of the database is affected, e.g. a foreign key check fails.
     """
-
-    pass
 
 
 class InternalError(DatabaseError):
@@ -74,8 +62,6 @@ class InternalError(DatabaseError):
     the transaction is out of sync, etc.
     """
 
-    pass
-
 
 class ProgrammingError(DatabaseError):
     """
@@ -83,16 +69,12 @@ class ProgrammingError(DatabaseError):
     wrong number of parameters specified, etc.
     """
 
-    pass
-
 
 class NotSupportedError(DatabaseError):
     """
     Exception raised in case a method or database API was used which is not supported by the database,
     e.g. requesting a .rollback() on a connection that does not support transaction or has transactions turned off.
     """
-
-    pass
 
 
 class DatabaseErrorWrapper:
@@ -114,7 +96,7 @@ class DatabaseErrorWrapper:
 
     def __exit__(self, exc_type, exc_value, traceback):
         if exc_type is None:
-            return
+            return None
         for exc_type in (
             DataError,
             OperationalError,

@@ -1,14 +1,13 @@
 import errno
 import os
 import time
-from builtins import object
 
 
 class FileLockException(Exception):
     pass
 
 
-class FileLock(object):
+class FileLock:
     """A file locking mechanism that has context-manager support so
     you can use it in a with statement. This should be relatively cross
     compatible as it doesn't rely on msvcrt or fcntl for the locking.
@@ -21,10 +20,11 @@ class FileLock(object):
         if timeout is not None and delay is None:
             raise ValueError("If timeout is not None, then delay must not be None.")
         self.is_locked = False
-        self.lockfile = os.path.join(os.getcwd(), "%s.lock" % file_name)
+        self.lockfile = os.path.join(os.getcwd(), f"{file_name}.lock")
         self.file_name = file_name
         self.timeout = timeout
         self.delay = delay
+        self.fd = None
 
     def acquire(self):
         """Acquire the lock, if possible. If the lock is in use, it check again
@@ -38,17 +38,17 @@ class FileLock(object):
                 self.fd = os.open(self.lockfile, os.O_CREAT | os.O_EXCL | os.O_RDWR)
                 self.is_locked = True  # moved to ensure tag only when locked
                 break
-            except OSError as e:
-                if e.errno != errno.EEXIST:
+            except OSError as exc:
+                if exc.errno != errno.EEXIST:
                     raise Exception(
-                        "file lock acquire e.errno != errno.EEXIST " + str(e)
+                        "file lock acquire e.errno != errno.EEXIST " + str(exc)
                     )
                 if self.timeout is None:
                     raise FileLockException(
-                        "Could not acquire lock on {}".format(self.file_name)
-                    )
+                        f"Could not acquire lock on {self.file_name}"
+                    ) from exc
                 if (time.time() - start_time) >= self.timeout:
-                    raise FileLockException("Timeout occurred.")
+                    raise FileLockException("Timeout occurred") from exc
                 time.sleep(self.delay)
 
     def release(self):
@@ -69,7 +69,7 @@ class FileLock(object):
             self.acquire()
         return self
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, exc_type, exc_value, exc_traceback):
         """Activated at the end of the with statement.
         It automatically releases the lock if it isn't locked.
         """

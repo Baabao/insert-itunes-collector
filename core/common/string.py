@@ -15,10 +15,9 @@ def to_utf8_string(value: AnyStr) -> str:
     """
     if isinstance(value, bytes):
         return value.decode("utf-8", errors="ignore")
-    elif isinstance(value, str):
+    if isinstance(value, str):
         return value
-    else:
-        return str(value)
+    return str(value)
 
 
 def trim_string(value: str) -> str:

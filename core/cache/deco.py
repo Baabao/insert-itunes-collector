@@ -2,6 +2,8 @@ import functools
 import hashlib
 import json
 
+from redis.exceptions import ResponseError, RedisError
+
 from core.cache.conn import get_redis_conn
 from core.conf import settings
 from core.utils.exceptions import ImproperlyConfigured
@@ -42,14 +44,14 @@ def apply_cache(key: str, db_number: int, timeout: int = 1200):
                 data = conn.get(cache_key)
                 if data is not None:
                     return data
-            except Exception as exc:
+            except ResponseError as exc:
                 logger.debug("get cache error, %s", exc)
 
             data = func(*args, **kwargs)
 
             try:
                 conn.set(cache_key, data, timeout)
-            except Exception as exc:
+            except RedisError as exc:
                 logger.debug("set cache error, %s", exc)
 
             return data

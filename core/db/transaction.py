@@ -52,6 +52,7 @@ class Atomic(ContextDecorator):
 
     def __exit__(self, exc_type, exc_value, traceback):
         connection = get_connection()
+        sid = None
 
         if connection.savepoint_ids:
             sid = connection.savepoint_ids.pop()
