@@ -1,0 +1,46 @@
+namespace: baabao-itunes
+
+annotations:
+  release-namespace: baabao-itunes
+  repository: insert-itunes-collector
+  app: insert-itunes-collector
+  description: "Craw new iTunes program and insert to database."
+
+nameOverride: ""
+
+replicaCount: 1
+
+image:
+  repository: baabao/insert-itunes-collector
+  tag: latest
+  pullPolicy: Always  # IfNotPresent
+
+# app no implement distribute architecture
+autoscaling:
+  enabled: false
+
+global:
+  PROD: "local"
+  AWS_ACCESS_KEY_ID: ""
+  AWS_SECRET_ACCESS_KEY: ""
+  REGION: "us-west-1"
+
+volume:
+  name: itunes-collector-volume
+  mountPath: /src/data
+
+persistentVolumeClaim:
+  claimName: itunes-collector-pvc
+
+resources:
+  limits:
+    cpu: 300m
+    memory: 1024Mi
+  requests:
+    cpu: 300m
+    memory: 1024Mi
+
+# single application
+nodeSelector: { }
+tolerations: [ ]
+affinity: { }

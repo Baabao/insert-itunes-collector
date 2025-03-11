@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: insert-itunes-collector-deployment
+  namespace: {{.Values.namespace}}
+  labels:
+    {{ include "insert-itunes-collector.labels" . | nindent 4}}
+  annotations:
+    {{ include "insert-itunes-collector.annotations" . | nindent 4}}
+spec:
+  replicas: {{.Values.replicaCount}}
+  selector:
+    matchLabels:
+      {{ include "insert-itunes-collector.matchLabels" . | nindent 6}}
+  template:
+    metadata:
+      labels:
+        {{ include "insert-itunes-collector.labels" . | nindent 8}}
+    spec:
+      containers:
+        - name: {{.Chart.Name}}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{.Values.image.pullPolicy}}
+          resources:
+            {{- toYaml .Values.resources | nindent 12}}
+          env:
+            - name: PROD
+              value: {{.Values.global.PROD | quote}}
+            {{- include "insert-itunes-collector.aws" . | nindent 12 }}
+            {{- include "insert-itunes-collector.database" . | nindent 12 }}
+            {{- include "insert-itunes-collector.cache" . | nindent 12 }}
+
+          volumeMounts:
+            - name: {{.Values.volume.name}}
+              mountPath: {{.Values.volume.mountPath}}
+      volumes:
+        - name: {{.Values.volume.name}}
+          persistentVolumeClaim:
+            claimName: {{.Values.persistentVolumeClaim.claimName}}
+
+      imagePullSecrets:
+        - name: regcred
+
+      nodeSelector:
+        {{- toYaml .Values.nodeSelector | nindent 8}}
+      tolerations:
+        {{- toYaml .Values.tolerations | nindent 8}}
+      affinity:
+        {{- toYaml .Values.affinity | nindent 8}}
