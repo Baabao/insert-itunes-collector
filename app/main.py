@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
 import copy
@@ -15,9 +14,6 @@ from typing import Dict, List, Optional, Tuple, Union
 
 from feedparser import FeedParserDict
 from redis.exceptions import RedisError
-
-# from rich import Console
-# from rich.panel import Panel
 
 from app.collector.db_sync import sync_tag_data_from_db
 from app.collector.itunes_collection_handler import (
@@ -186,26 +182,6 @@ def create_start_message() -> str:
     messages += [br]
 
     return new_line + f"{new_line}".join(messages)
-
-
-# def create_execution_announcement(execution: ExecutionInterface) -> str:
-#     announcement_text = """
-#     [App config]
-#     program_timeout: 3600
-#
-#     [Runner config]
-#     continue_execute: True
-#     """
-#     nl = "\n"
-#
-#     announcement_text = f"""
-#     [App config]
-#     {f'{nl}'.join([f'{attr}: {getattr(execution.config, attr)}' for attr in [attr for attr in dir(execution.config) if not attr.startswith("_")]])}
-#     """
-#     console = Console()
-#     console.out(Panel(announcement_text, title="CONFIGURATION", expand=False))
-#
-#     return str()
 
 
 @calc_deco()

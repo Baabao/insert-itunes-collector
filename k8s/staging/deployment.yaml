@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: insert-itunes-collector-deployment
+  namespace: baabao-itunes
+  labels:
+    app.kubernetes.io/instance: insert-itunes-collector
+    app.kubernetes.io/name: insert-itunes-collector
+  annotations:
+    app: insert-itunes-collector
+    cluster: staging-cluster
+    description: Craw new iTunes program and insert to database.
+    environment: staging
+    meta.helm.sh/release-name: insert-itunes-collector
+    meta.helm.sh/release-namespace: baabao-itunes
+    release-namespace: baabao-itunes
+    repository: insert-itunes-collector
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: insert-itunes-collector
+      app.kubernetes.io/instance: insert-itunes-collector
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: insert-itunes-collector
+        app.kubernetes.io/instance: insert-itunes-collector
+    spec:
+      containers:
+        - name: insert-itunes-collector
+          image: 527466361125.dkr.ecr.ap-northeast-1.amazonaws.com/baabao/insert-itunes-collector:latest
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "1025Mi"
+              cpu: "300m"
+            limits:
+              memory: "1025Mi"
+              cpu: "300m"
+          env:
+            - name: PROD
+              value: "staging"
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: insert-itunes-collector-secret
+                  key: aws_access_key_id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: insert-itunes-collector-secret
+                  key: aws_secret_access_key
+            - name: REGION
+              valueFrom:
+                secretKeyRef:
+                  name: insert-itunes-collector-secret
+                  key: aws_region
+            - name: POSTGRES_SECRET_ID
+              valueFrom:
+                secretKeyRef:
+                  name: insert-itunes-collector-secret
+                  key: postgres_secret_id
+            - name: CACHE_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: insert-itunes-collector-secret
+                  key: cache_endpoint
+          volumeMounts:
+            - name: itunes-collector-volume
+              mountPath: "/src/data"
+      volumes:
+        - name: itunes-collector-volume
+          persistentVolumeClaim:
+            claimName: itunes-collector-pvc
+      imagePullSecrets:
+        - name: regcred
+
+
+

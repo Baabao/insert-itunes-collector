@@ -21,6 +21,7 @@ poetry.lock
 
 
 logs/
+data/
 **/secret.yaml
 .mypy_cache/
 .pytest_cache/

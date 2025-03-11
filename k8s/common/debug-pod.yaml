@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: debug-pod
+  namespace: baabao-itunes
+spec:
+  containers:
+    - name: debug-pod
+      image: amazon/aws-cli:latest
+      command:
+        - sleep
+        - "36000"
+      imagePullPolicy: IfNotPresent
+
+      volumeMounts:
+        - name: itunes-collector-volume
+          mountPath: "src/data"
+  volumes:
+    - name: itunes-collector-volume
+      persistentVolumeClaim:
+        claimName: itunes-collector-pvc

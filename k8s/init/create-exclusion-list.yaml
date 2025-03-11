@@ -1,0 +1,88 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: create-exclusion-list-job
+  namespace: baabao-itunes
+spec:
+  template:
+    spec:
+      containers:
+        - name: prep-container
+          image: busybox
+          command:
+            - sh
+            - -c
+            - |
+              #!/bin/sh
+
+              cat > /src/data/exclusion_list <<EOF
+              527535531  # 青春愛消遣
+              982781473  # 快速接頭英雄旅程
+              1192212072 # 馬力歐陪你喝一杯
+              1212430485 # 極品夫妻
+              1251863450 # 邊緣人聽音樂
+              1436603385 # 笨瓜秀
+              1033768556 # Moto狂想曲
+              1523262177  # 開箱(自家節目)
+              1523427426  # 和星星約會(自家節目)
+              1523255832  # 來碗八寶粥(自家節目)
+              1523409360  # 禁騎四超人
+              1122901137  # 夜聽
+              1531696614  # 失敗好滋味
+              1555178360  # 一百趴沈(已在八寶Hosting)
+              1507918837  # 草木談心(已在八寶Hosting)
+              1537350200  # 醜男醜女不要聽 (Rss Import Program Id 122640)
+              1550260937  # B2B 業務行館 (Rss Import Program Id 136282)
+              1518139175  # 上班阿叔 Uncles' Radio (Rss Import Program Id 79413)
+              1546231751  # 練舞練心練蕭威 (Rss Import Program Id 184184)
+              1546478288  # 公民記者來泡茶 (Rss Import Program Id 184036)
+              1554706205  # SH好野人生 (Rss Import Program Id 158050)
+              1527950309  # VULTURE | tv. (Rss Import Program Id 157128)
+              1527737441  # 夜事 (Rss Import Program Id 142385)
+              1553680214  # Podcast眾議院 (Rss Import Program Id 109376)
+              1555683396  # 聯合開Pod (Rss Import Program Id 89914)
+              1523409475  # 擺渡人 (Rss Import Program Id 79414)
+              1567655741  # 正港老司機 (Rss Import Program Id 129122)
+              1562445114  # 密宗法要交流（梵师兄）| Essentials of Tantrism | Mr. Fan(Rss Import Program Id 79930)
+              1513729517  # Amaygo Bar (Rss Import Program Id 79689)
+              1575074139  # 兩個戲劇顧問 (Rss Import Program Id 230939)(insert_one daemon)
+              1566117600  # 兔子妮妮原創童話 (Rss Import Program Id 231850)(insert_one daemon)
+              1572394973  # 口語表達卡有料 Speak With Care (Rss Import Program Id 232373)(scan_opml daemon)
+              1553114698  # 地產達人秀 (Rss Import Program Id 232764)(insert_one daemon)
+              1591742344  # 政治正確反抗軍 (Rss Import Program Id 233270)(insert_one daemon)
+              1586822739  # 鄭家瑜 Jiayu Jeng (Rss Import Program Id 232902)(insert_one daemon)
+              1349923893  # 狀況四 排除 https://app.asana.com/0/1197998527344785/1201545397045828
+              794030859   # program id: 4233, The James Altucher Show (狀況五 因為 XML 太大，所以之前放入update排除名單)
+              151230264   # program id: 6069, The Economist Podcasts (狀況五 因為 XML 太大，所以之前放入update排除名單)
+              1279335230  # program id: 8011, Was jetzt? (狀況五 因為 XML 太大，所以之前放入update排除名單)
+              830709730   # program id: 11301, backspace.fm (狀況五 因為 XML 太大，所以之前放入update排除名單)
+              129950494   # program id: 12165, Klassik aktuell (狀況五 因為 XML 太大，所以之前放入update排除名單)
+              435665417   # program id: 15715, The History of the Christian Church (狀況五 因為 XML 太大，所以之前放入update排除名單)
+              705335155   # program id: 16675, All Ruby Podcasts by Devchat.tv (狀況五 因為 XML 太大，所以之前放入update排除名單)
+              1328464130  # program id: 33182, The 2GuysTalking All You Can Eat Podcast Buffet - Everything We've Got - Listen Now! (狀況五 因為 XML 太大，所以之前放入update排除名單)
+              1537527514  # program id: 65616, Thai PBS Podcast (狀況五 因為 XML 太大，所以之前放入update排除名單)
+              1440489120  # program id: 27583. The Royal College of Psychiatrists (狀況六 有小於 1000 的年份 https://app.asana.com/0/1197998527344785/1201545397045843)
+              1415808510  # program id: 59306, Gals on the Go (狀況六 有小於 1000 的年份 https://app.asana.com/0/1197998527344785/1201545397045843)
+              893874169   # program id: 35481, The Soul of Enterprise: Business in the Knowledge Economy (狀況八 有單集 url 相同)
+              1622399789  # 好事瘋雲榜 (Rss Import Program Id 237940)(insert_one daemon)
+              1624457439  # 出神錄話 (Rss Import Program Id 238213)(insert_one daemon)
+              1541568570  # 文藝青年自助餐 Hipster Buffet (Rss Import Program Id 230795)(insert_one daemon)
+              1542456001  # 321 下課囉！ (Rss Import Program Id 223251)(insert_one daemon)
+              1530016140  # 三尼巴掌｜怪新聞 (Rss Import Program Id 230940)(insert_one daemon)
+              1501958212  # 陳執董的商業洞察 (Rss Import Program Id 241756)(insert_one daemon)
+              1572185996  # 有話職說 Speak With Care (Rss Import Program Id 232373)(insert_one daemon)
+              1533682360  # 瘋狂效應 (Rss Import Program Id 243582)(insert_one daemon)
+              1539627863  # 愛播聽書 (Rss Import Program Id 244549)(insert_one daemon)
+              1190387509  # 《活水》有聲靈修(Program id 63907，手動加入排除，RSS duration 0:00)
+              1684444289  # 生活好書心 (Rss Import Program Id 247723)(insert_one daemon)
+              1530479399  # 禪悅之聲 (Rss Import Program Id 247791)(insert_one daemon)
+              EOF
+
+          volumeMounts:
+            - name: itunes-collector-volume
+              mountPath: "src/data"
+      volumes:
+        - name: itunes-collector-volume
+          persistentVolumeClaim:
+            claimName: itunes-collector-pvc
+      restartPolicy: Never

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: itunes-collector-pvc
+  namespace: baabao-itunes
+spec:
+  accessModes:
+    - ReadWriteMany
+  volumeName: itunes-collector-pv
+  resources:
+    requests:
+      storage: 20Gi

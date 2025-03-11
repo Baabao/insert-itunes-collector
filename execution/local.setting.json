@@ -8,7 +8,7 @@
     "create_program_timeout": 3600,
     "fetch_rss_timeout": 150,
     "insert_episode_timeout": 240,
-    "exclude_program_list_file_path": "exclusion_list"
+    "exclude_program_list_file_path": "data/exclusion_list"
   },
   "runner_config": {
     "continue_execute": true,
