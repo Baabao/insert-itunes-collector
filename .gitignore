@@ -115,3 +115,4 @@ venv.bak/
 data/
 logs/
 *.py.bak
+**/secret.yaml
