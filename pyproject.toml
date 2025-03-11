@@ -29,7 +29,8 @@ dependencies = [
     "s3transfer (==0.3.7)",
     "sgmllib3k (==1.0.0)",
     "six (==1.14.0)",
-    "urllib3 (==1.25.8)"
+    "urllib3 (==1.25.8)",
+    "rich (>=13.9.4,<14.0.0)"
 ]
 
 [tool.poetry]
@@ -37,12 +38,16 @@ packages = [
     { include = "app" }
 ]
 
+[tool.poetry.dependencies]
+python = ">=3.9,<=3.9.12"
+
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"
 black = "24.2.0"
 isort = "5.13.2"
 mypy = "^1.15.0"
 ruff = "^0.9.6"
+pylint = "^3.3.5"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
@@ -57,3 +62,6 @@ profile = "black"
 
 [tool.mypy]
 disable_error_code = ["import-untyped", "var-annotated", "attr-defined", "misc"]
+
+[tool.ruff]
+target-version = "py39"

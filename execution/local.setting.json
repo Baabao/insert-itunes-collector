@@ -1,0 +1,119 @@
+{
+  "app_config": {
+    "sql_lock_limit": 500,
+    "sql_lock_sleep_time": 1,
+    "sql_lock_insert_count": 3,
+    "sql_lock_update_count": 2,
+    "sql_lock_remove_count": 18,
+    "create_program_timeout": 3600,
+    "fetch_rss_timeout": 150,
+    "insert_episode_timeout": 240,
+    "exclude_program_list_file_path": "exclusion_list"
+  },
+  "runner_config": {
+    "continue_execute": true,
+    "prepare_interval": 1,
+    "post_interval": 1,
+    "process_num": 1
+  },
+  "logging_config": {
+    "version": 1,
+    "formatters": {
+      "verbose": {
+        "format": "%(asctime)s (%(process)d) - %(name)s - %(module)s:%(funcName)s:%(lineno)d [%(levelname)s] %(message)s",
+        "datefmt": "%Y-%m-%d %H:%M:%S.%s",
+        "style": "%"
+      },
+      "simple": {
+        "format": "[%(levelname)s] %(asctime)s - %(module)s:%(funcName)s:%(lineno)d - %(message)s",
+        "datefmt": "%Y-%m-%d %H:%M:%S",
+        "style": "%"
+      },
+      "json": {
+        "format": {
+          "timestamp": "asctime",
+          "loggerName": "name",
+          "level": "levelname",
+          "message": "message"
+        },
+        "datefmt": "%Y-%m-%dT%H:%M:%S%z",
+        "class": "log_helper.json_formatter.JsonFormatter"
+      }
+    },
+    "handlers": {
+      "console": {
+        "class": "logging.StreamHandler",
+        "level": "DEBUG",
+        "formatter": "simple",
+        "stream": "ext://sys.stdout"
+      },
+      "error": {
+        "class": "logging.StreamHandler",
+        "level": "ERROR",
+        "formatter": "simple"
+      },
+      "stdout_log": {
+        "class": "logging.handlers.TimedRotatingFileHandler",
+        "level": "INFO",
+        "formatter": "simple",
+        "filename": "logs/stdout.log",
+        "when": "D",
+        "interval": 7,
+        "backupCount": 4,
+        "encoding": "utf8"
+      },
+      "stderr_log": {
+        "class": "logging.handlers.TimedRotatingFileHandler",
+        "level": "ERROR",
+        "formatter": "verbose",
+        "filename": "logs/stderr.log",
+        "when": "D",
+        "interval": 7,
+        "backupCount": 13,
+        "encoding": "utf8"
+      },
+      "debug_log": {
+        "class": "logging.handlers.TimedRotatingFileHandler",
+        "level": "DEBUG",
+        "formatter": "verbose",
+        "filename": "logs/debug.log",
+        "when": "D",
+        "interval": 14,
+        "backupCount": 4,
+        "encoding": "utf8"
+      },
+      "firehose": {
+        "class": "log_helper.aws_handler.FirehoseHandler",
+        "formatter": "json",
+        "stream_name": "PUT-S3-NAky1"
+      }
+    },
+    "loggers": {
+      "runner": {
+        "handlers": [
+          "console",
+          "error",
+          "stdout_log",
+          "stderr_log",
+          "firehose"
+        ],
+        "level": "DEBUG",
+        "propagate": true,
+        "disabled": false
+      },
+      "main": {
+        "handlers": [
+          "console",
+          "error",
+          "stdout_log",
+          "stderr_log",
+          "debug_log",
+          "firehose"
+        ],
+        "level": "DEBUG",
+        "propagate": true,
+        "disabled": false
+      }
+    }
+  }
+}
