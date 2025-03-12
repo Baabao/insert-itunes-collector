@@ -24,4 +24,4 @@
 
 data/
 logs/
-**/secret.yaml
+*/secret.yaml

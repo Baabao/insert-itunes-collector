@@ -12,7 +12,7 @@ env:
   AWS_ACCOUNT_ID: ${{secrets.AWS_ACCOUNT_ID}}
   POSTGRES_SECRET_ID: ${{secrets.POSTGRES_SECRET_ID}}
   CACHE_ENDPOINT: ${{secrets.CACHE_ENDPOINT}}
-  IMAGE_REPOSITORY_NAME: ${{env.IMAGE_REPOSITORY_NAME}}
+  IMAGE_REPOSITORY_NAME: ${{vars.IMAGE_REPOSITORY_NAME}}
 
 permissions:
   id-token: write   # This is required for requesting the JWT
@@ -100,7 +100,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{steps.login-ecr.outputs.registry}}/${{env.IMAGE_REPOSITORY_NAME}}:${{steps.github-short-sha.outputs.short_sha}}, ${{steps.login-ecr.outputs.registry}}/${{env.ECR_REPOSITORY}}:latest
+          tags: ${{steps.login-ecr.outputs.registry}}/${{env.IMAGE_REPOSITORY_NAME}}:${{steps.github-short-sha.outputs.short_sha}}, ${{steps.login-ecr.outputs.registry}}/${{env.IMAGE_REPOSITORY_NAME}}:latest
 
   package-helm:
 

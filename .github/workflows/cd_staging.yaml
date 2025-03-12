@@ -1,0 +1,78 @@
+name: Continuous Delivery - Staging
+
+on:
+  workflow_run:
+    workflows: [ Continuous Integration ]
+    types: [ completed ]
+    branches: [ develop ]
+
+env:
+  AWS_ACCOUNT_ID: ${{secrets.AWS_ACCOUNT_ID}}
+  AWS_REGION: ${{secrets.AWS_REGION}}
+  IMAGE_REPOSITORY_NAME: ${{vars.IMAGE_REPOSITORY_NAME}}
+  CHART_REPOSITORY_NAME: ${{vars.CHART_REPOSITORY_NAME}}
+
+permissions:
+  id-token: write   # This is required for requesting the JWT
+  contents: read    # This is required for actions/checkout
+
+jobs:
+  helm-install:
+
+    name: Helm install
+    environment: staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          ref: ${{github.ref}}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::527466361125:role/Github_Action
+          role-duration-seconds: 1200
+          aws-region: ap-northeast-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Update kubeconfig
+        env:
+          CLUSTER_NAME: ${{vars.CLUSTER_NAME}}
+        run: aws eks update-kubeconfig --region "${AWS_REGION}" --name "${CLUSTER_NAME}"
+
+      - uses: azure/setup-kubectl@v4
+        with:
+          version: 'v1.25.9' # default is latest stable
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4.2.0
+        with:
+          version: v3.14.4
+
+      - name: Install the chart
+        env:
+          CHART: insert-itunes-collector
+          REPOSITORY: ${{steps.login-ecr.outputs.registry}}/${{env.IMAGE_REPOSITORY_NAME}}
+          OCI_URL: oci://${{steps.login-ecr.outputs.registry}}/${{env.CHART_REPOSITORY_NAME}}
+          PROD: ${{vars.PROD}}
+          POSTGRES_SECRET_ID: ${{secrets.POSTGRES_SECRET_ID}}
+          CACHE_ENDPOINT: ${{secrets.CACHE_ENDPOINT}}
+          # avoid assign `AWS_ACCESS_KEY_ID` & `AWS_SECRET_ACCESS_KEY` in each step
+          EXECUTE_AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
+          EXECUTE_AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+        run: |
+          helm upgrade -i "$CHART" "$OCI_URL" \
+          --set image.repository="${REPOSITORY}" \
+          --set global.PROD="${PROD}" \
+          --set global.AWS_ACCESS_KEY_ID="${EXECUTE_AWS_ACCESS_KEY_ID}" \
+          --set global.AWS_SECRET_ACCESS_KEY="${EXECUTE_AWS_SECRET_ACCESS_KEY}" \
+          --set global.REGION="${AWS_REGION}" \
+          --set global.POSTGRES_SECRET_ID="${POSTGRES_SECRET_ID}" \
+          --set global.CACHE_ENDPOINT="${CACHE_ENDPOINT}" \
+          -n baabao-itunes
