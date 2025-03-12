@@ -62,11 +62,10 @@ def init_arg() -> argparse.Namespace:
 
 
 if __name__ == "__main__":
-    args = init_arg()
-
-    kwargs = {k: v for k, v in vars(args).items() if v is not None}
-    if kwargs:
-        modify(**kwargs)
-        print(f"Successful change {kwargs}")
+    parse_args = init_arg()
+    parse_kwargs = {k: v for k, v in vars(parse_args).items() if v is not None}
+    if parse_kwargs:
+        modify(**parse_kwargs)
+        print(f"Successful change {parse_kwargs}")
     else:
         print("Nothing change")
