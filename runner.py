@@ -15,6 +15,11 @@ def execute():
             runner_config = execution.runner
 
             if not runner_config.continue_execute:
+                logger.info(
+                    "Job will shutdown in 30 seconds. %s",
+                    datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                )
+                time.sleep(30)
                 break
 
             time.sleep(runner_config.prepare_interval)
