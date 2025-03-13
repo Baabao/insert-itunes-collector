@@ -87,6 +87,8 @@ spec:
                   - "/bin/sh"
                   - "-c"
                   - "python /src/edit_runner_config.py --continue_execute=false && sleep 1800"
+                  -
+      terminationGracePeriodSeconds: 1800
 
       volumes:
         - name: itunes-collector-volume
