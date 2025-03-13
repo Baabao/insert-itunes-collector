@@ -870,7 +870,7 @@ def handle_new_entry(
     # allow empty fields
     try:
         description = get_feed_description_description(entry)
-    except FeedResultFieldNotFoundError as exc:
+    except (FeedResultFieldNotFoundError, IndexError) as exc:
         logger.debug("description not found, %s", exc)
         description = ""
 

@@ -57,14 +57,14 @@ def is_good_feed_dict(feed_dict: FeedParserDict) -> bool:
     if feed_dict is None:
         return False
     if not isinstance(feed_dict, FeedParserDict):
-        raise TypeError("Incorrect type, feed_field: %s" % (type(feed_dict),))
+        raise TypeError(f"Incorrect type, feed_field: {type(feed_dict)}")
     if get_feed_field(feed_dict) is None:
         raise FeedResultFieldNotFoundError(
-            "Field feed not found, %s" % (dir_attrs(feed_dict),)
+            f"Field feed not found, {dir_attrs(feed_dict)}"
         )
     if get_feed_entries_field(feed_dict) is None:
         raise FeedResultFieldNotFoundError(
-            "Field entries not found, %s" % (dir_attrs(feed_dict),)
+            f"Field entries not found, {dir_attrs(feed_dict)}"
         )
     return True
 
@@ -91,7 +91,7 @@ def _fetch_author_key_wrapper(
     field = apply_methods_to_get_first_match_result(possible_methods, feed_dict, key)
     if field is None:
         raise FeedResultFieldNotFoundError(
-            "Field %s not found, %s" % (key, (dir_attrs(feed_dict)))
+            f"Field {key} not found, {dir_attrs(feed_dict)}"
         )
     return field
 
@@ -115,7 +115,7 @@ def get_feed_author_email_field(feed_field: Dict) -> str:
     email = _fetch_author_key_wrapper(possible_methods, feed_field, "email")
     if not is_email(email):
         raise FeedResultFieldNotFoundError(
-            "Field email is not a correct email string, email: %s" % (email,)
+            f"Field email is not a correct email string, email: {email}"
         )
     return string_formatter(email)
 
@@ -125,13 +125,13 @@ def get_feed_data_uri_field(feed_field: Dict) -> str:
     enclosures = fetch_enclosures_method(feed_field)
     item = find_item_with_key(enclosures, "href")
     if item is None:
-        raise FeedResultFieldNotFoundError("field href not found, %s" % (enclosures,))
+        raise FeedResultFieldNotFoundError(f"Field href not found, {enclosures}")
 
     url = string_formatter(item.get("href"))
     if not is_url_string(url):
         url = try_fixing_url(url)
     if not is_audio_url(url):
-        raise FeedResultTypeError("field href validate error, %s" % (url,))
+        raise FeedResultTypeError(f"Field href validate error, {url}")
     return url
 
 
@@ -140,7 +140,7 @@ def get_feed_title_field(feed_field: Dict) -> str:
     title = feed_field.get("title")
     if title is None:
         raise FeedResultFieldNotFoundError(
-            "field title not found, %s" % (dir_attrs(feed_field),)
+            f"Field title not found, {dir_attrs(feed_field)}"
         )
     return string_formatter(title)
 
@@ -166,8 +166,7 @@ def _fetch_content_value_method(feed_entry: Union[FeedParserDict, Dict]) -> str:
     item = find_item_with_key(content, "value")
     if item is None:
         raise FeedResultFieldNotFoundError(
-            "field value not found, %s"
-            % ([{i: d.keys()} for i, d in enumerate(content, 1)],)
+            f"Field value not found, {[{i: d.keys()} for i, d in enumerate(content, 1)]}"
         )
     return html_to_string_formatter(item.get("value"))
 
@@ -189,7 +188,7 @@ def get_feed_description_description(feed_field: Dict) -> str:
     description_list = _try_multiple_methods_for_description(feed_field)
     if len(description_list) == 0:
         raise FeedResultFieldNotFoundError(
-            "Field description not found, %s" % (dir_attrs(feed_field),)
+            f"Field description not found, {dir_attrs(feed_field)}"
         )
     formatted_description_list = apply_method_with_list_to_get_all_result(
         description_list, string_formatter
@@ -197,9 +196,7 @@ def get_feed_description_description(feed_field: Dict) -> str:
     formatted_description_list = apply_method_with_list_to_get_all_result(
         formatted_description_list, remove_html_tag_formatter
     )
-    sorted_description_list = sorted(
-        formatted_description_list, key=lambda d: len(d), reverse=True
-    )
+    sorted_description_list = sorted(formatted_description_list, key=len, reverse=True)
     return sorted_description_list[0]
 
 
@@ -221,7 +218,7 @@ def _convert_release_date(release_date: str) -> str:
             logger.debug("formatter error, function: %s, %s", func.__name__, exc)
         except Exception as exc:
             logger.error("unexpected error, %s", exc)
-            raise Exception("unexpected error, %s" % (exc,)) from exc
+            raise Exception(f"Unexpected error, {exc}") from exc
     raise FeedResultFieldNotFoundError("Convert error, cant parse release_date")
 
 
@@ -229,7 +226,7 @@ def get_feed_release_date_field(feed_field: Dict) -> str:
     release_date_list = _try_multiple_methods_for_release_date(feed_field)
     if len(release_date_list) == 0:
         raise FeedResultFieldNotFoundError(
-            "field release_date is empty, %s" % (dir_attrs(feed_field),)
+            f"Field release_date is empty, {dir_attrs(feed_field)}"
         )
     release_date = release_date_list[0]
     release_date = string_formatter(release_date)
@@ -261,7 +258,7 @@ def get_feed_tag_field(feed_field: Dict) -> List[str]:
     tag_list = fetch_tags_method(feed_field)
     if len(tag_list) == 0:
         raise FeedResultFieldNotFoundError(
-            "field tags is empty, %s" % (dir_attrs(feed_field),)
+            f"Field tags is empty, {dir_attrs(feed_field)}"
         )
     if not isinstance(tag_list, list):
         return []
