@@ -34,10 +34,10 @@ persistentVolumeClaim:
 
 resources:
   limits:
-    cpu: 150m
+    cpu: 300m
     memory: 512Mi
   requests:
-    cpu: 150m
+    cpu: 300m
     memory: 512Mi
 
 # single application
