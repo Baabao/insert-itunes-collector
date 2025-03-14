@@ -38,6 +38,7 @@ from app.common.exceptions import (
 from app.common.inspect import calc_deco, diff_time
 from app.concurrency_task import get_detail, get_top
 from app.crawler import abort_wrapper, crawl_feeder
+from app.db.deco import check_conn
 from app.db.operations import (
     get_all_deleted_itunes_program,
     get_all_episode_by_program_v3,
@@ -359,6 +360,7 @@ def handle_create_timeout(
     return None
 
 
+@check_conn(end_connection=True)
 def handle_create(
     lock: BaseProxy,
     sleep_dict: DictProxy,
