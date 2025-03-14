@@ -3,10 +3,10 @@ from __future__ import absolute_import
 import copy
 import datetime
 import gc
+import io
 import os
 import timeit
 import traceback
-from builtins import next, str
 from functools import partial
 from multiprocessing import Manager, Pool
 from multiprocessing.managers import BaseProxy, DictProxy
@@ -14,6 +14,10 @@ from typing import Dict, List, Optional, Tuple, Union
 
 from feedparser import FeedParserDict
 from redis.exceptions import RedisError
+from rich.columns import Columns
+from rich.console import Console
+from rich.padding import Padding
+from rich.panel import Panel
 
 from app.collector.db_sync import sync_tag_data_from_db
 from app.collector.itunes_collection_handler import (
@@ -38,7 +42,6 @@ from app.common.exceptions import (
 from app.common.inspect import calc_deco, diff_time
 from app.concurrency_task import get_detail, get_top
 from app.crawler import abort_wrapper, crawl_feeder
-from app.db.deco import check_conn
 from app.db.operations import (
     get_all_deleted_itunes_program,
     get_all_episode_by_program_v3,
@@ -81,10 +84,8 @@ from config.constants import ITUNES_COLLECTION_PATH, ITUNES_TAGS_FILE_PATH, PROJ
 from config.loader import execution
 from core.common.fs_utils import read_file, write_file
 from core.common.string import is_empty_string, to_utf8_string, trim_string
-from core.conf import ExecutionInterface
 from core.db.utils import Error as DBError
 from log_helper.async_logger import get_async_logger
-from log_helper.utils import dir_attrs
 
 logger = get_async_logger("main")
 
@@ -160,29 +161,68 @@ def find_itunes_producer(
     )
 
 
-def create_start_message() -> str:
+def create_rich_panel(title: str, string: str) -> Padding:
+    panel = Panel.fit(string, title=title)
+    return Padding(panel, pad=(1, 1, 1, 1))
+
+
+def create_rich_string(rich_dict: Dict) -> str:
+    console = Console()
+    output_stream = io.StringIO()
+    console.file = output_stream
+
+    padding_list = []
+    for title, string in rich_dict.items():
+        padding_list.append(create_rich_panel(title, string))
+
+    console.print(Columns(padding_list))
+    return output_stream.getvalue()
+
+
+def filter_attr(obj: object, name: str) -> Optional[str]:
+    if name.startswith("_") or callable(getattr(obj, name)):
+        return None
+    return f"{name}: {getattr(obj, name)}"
+
+
+def retrieve_attr(obj: object) -> Dict:
+    key = obj.__class__.__name__
+    value = []
+    for attr in dir(obj):
+        string = filter_attr(obj, attr)
+        if string:
+            value.append(string)
+    return {key: "\n".join(value)}
+
+
+def get_old_announcement() -> str:
     br = "########################################"
     new_line = "\n"
-
     messages = [br, "[App config]"]
-
     app = execution.config
     for attr in dir(app):
         if attr.startswith("_") or callable(getattr(app, attr)):
             continue
         messages.append(f"{attr}: {getattr(app, attr)}")
-
     messages += ["--------------------", "[Runner config]"]
-
     runner = execution.runner
     for attr in dir(runner):
         if attr.startswith("_") or callable(getattr(runner, attr)):
             continue
         messages.append(f"{attr}: {getattr(runner, attr)}")
-
     messages += [br]
-
     return new_line + f"{new_line}".join(messages)
+
+
+def create_start_message() -> str:
+    try:
+        rich_dict = {}
+        for config in [execution.config, execution.runner]:
+            rich_dict.update(retrieve_attr(config))
+
+        return f"\n{create_rich_string(rich_dict)}"
+    except:
+        return get_old_announcement()
 
 
 @calc_deco()
@@ -360,7 +400,6 @@ def handle_create_timeout(
     return None
 
 
-@check_conn(end_connection=True)
 def handle_create(
     lock: BaseProxy,
     sleep_dict: DictProxy,
