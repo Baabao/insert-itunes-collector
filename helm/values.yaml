@@ -35,10 +35,10 @@ persistentVolumeClaim:
 resources:
   limits:
     cpu: 300m
-    memory: 512Mi
+    memory: 1024Mi
   requests:
     cpu: 300m
-    memory: 512Mi
+    memory: 1024Mi
 
 # single application
 nodeSelector: { }
