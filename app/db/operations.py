@@ -74,7 +74,7 @@ def insert_rank_data(category_id, data):
 
     with connection.cursor() as cursor:
         cursor.execute(query, (category_id, data))
-        logger.debug("insert_rank_data: ", cursor.query)
+        logger.debug("insert_rank_data: %s", cursor.query)
         result = cursor.fetchone()
         if result is None:
             raise DatabaseInsertError("Insert Failed")
@@ -143,7 +143,7 @@ def insert_producer(artist_id, nick_name):
             with connection.cursor() as cursor:
                 # insert auth user first
                 cursor.execute(auth_user_query, (password, user_name, now))
-                logger.debug("insert_producer: auth_user ", cursor.query)
+                logger.debug("insert_producer: auth_user %s", cursor.query)
 
                 auth_user_id = cursor.fetchone()
                 if not auth_user_id:
@@ -154,7 +154,7 @@ def insert_producer(artist_id, nick_name):
                 cursor.execute(
                     producer_query, (auth_user_id, user_account, nick_name, now, now)
                 )
-                logger.debug("insert_producer: products_producer ", cursor.query)
+                logger.debug("insert_producer: products_producer %s", cursor.query)
 
                 producer_id = cursor.fetchone()
                 if not producer_id:
@@ -163,7 +163,9 @@ def insert_producer(artist_id, nick_name):
                 producer_id = producer_id[0]
 
                 cursor.execute(itunes_producer_query, (artist_id, producer_id))
-                logger.debug("insert_producer: products_itunes_producer ", cursor.query)
+                logger.debug(
+                    "insert_producer: products_itunes_producer %s", cursor.query
+                )
 
                 itunes_producer_id = cursor.fetchone()
                 if not itunes_producer_id:
@@ -228,7 +230,7 @@ def insert_program(
                     program_query,
                     (title, description, image_url, producer_id, now, now),
                 )
-                logger.debug("insert_program: products_program ", cursor.query)
+                logger.debug("insert_program: products_program %s", cursor.query)
 
                 program_id = cursor.fetchone()
                 if not program_id:
@@ -237,7 +239,7 @@ def insert_program(
                 program_id = program_id[0]
 
                 cursor.execute(program_tag_query, (program_id, tag_id))
-                logger.debug("insert_program: products_program_tags ", cursor.query)
+                logger.debug("insert_program: products_program_tags %s", cursor.query)
 
                 program_tag_id = cursor.fetchone()
                 if not program_tag_id:
@@ -246,7 +248,7 @@ def insert_program(
                 cursor.execute(
                     itunes_program_query, (collection_id, program_id, i_producer_id)
                 )
-                logger.debug("insert_program: products_itunes_program ", cursor.query)
+                logger.debug("insert_program: products_itunes_program %s", cursor.query)
 
                 itunes_program_id = cursor.fetchone()
                 if not itunes_program_id:
@@ -257,7 +259,9 @@ def insert_program(
                     new_program_rss_data_query,
                     (program_id, new_rss_url, new_email, new_producer_name, now, now),
                 )
-                logger.debug("insert_program: products_program_rss_data ", cursor.query)
+                logger.debug(
+                    "insert_program: products_program_rss_data %s", cursor.query
+                )
 
                 program_rss_data_id = cursor.fetchone()
                 if not program_rss_data_id:
@@ -282,7 +286,7 @@ def insert_tag(name):
 
     with connection.cursor() as cursor:
         cursor.execute(query, (name, now, now))
-        logger.debug("insert_tag: ", cursor.query)
+        logger.debug("insert_tag: %s", cursor.query)
 
         tag_id = cursor.fetchone()
         if not tag_id:
@@ -339,7 +343,7 @@ def insert_episode(
                         now,
                     ),
                 )
-                logger.debug("insert_episode: products_episode ", cursor.query)
+                logger.debug("insert_episode: products_episode %s", cursor.query)
 
                 episode_id = cursor.fetchone()
                 if not episode_id:
@@ -349,7 +353,9 @@ def insert_episode(
 
                 for tag in tags:
                     cursor.execute(episode_tag_query, (episode_id, tag))
-                    logger.debug("insert_episode: products_episode_tags ", cursor.query)
+                    logger.debug(
+                        "insert_episode: products_episode_tags %s", cursor.query
+                    )
 
                     episode_tag_id = cursor.fetchone()
                     if not episode_tag_id:
@@ -358,7 +364,7 @@ def insert_episode(
                 cursor.execute(
                     itunes_episode_query, (data_uri, episode_id, i_program_id)
                 )
-                logger.debug("insert_episode: products_itunes_episode ", cursor.query)
+                logger.debug("insert_episode: products_itunes_episode %s", cursor.query)
 
                 itunes_episode_id = cursor.fetchone()
                 if not itunes_episode_id:
@@ -392,7 +398,7 @@ def get_itunes_episode(data_uri, collection_id):
                 collection_id,
             ),
         )
-        logger.debug("get_itunes_episode: ", cursor.query)
+        logger.debug("get_itunes_episode: %s", cursor.query)
 
         result = cursor.fetchone()
         if result:
@@ -431,7 +437,7 @@ def insert_count_entries(collection_id, program_id, producer_id, episode_count):
                     (collection_id, program_id, producer_id, episode_count, now),
                 )
                 logger.debug(
-                    "insert_count_entries: products_itunes_collectionstatistics ",
+                    "insert_count_entries: products_itunes_collectionstatistics %s",
                     cursor.query,
                 )
 
@@ -447,7 +453,7 @@ def insert_count_entries(collection_id, program_id, producer_id, episode_count):
                         program_id,
                     ),
                 )
-                logger.debug("insert_count_entries: products_program ", cursor.query)
+                logger.debug("insert_count_entries: products_program %s", cursor.query)
 
                 program = cursor.fetchone()
                 if not program:
@@ -517,7 +523,7 @@ def update_program_latest(program_id, episode_dict):
 
     with connection.cursor() as cursor:
         cursor.execute(program_query, (episode_id, release_date, program_id))
-        logger.debug("update_program_latest: ", cursor.query)
+        logger.debug("update_program_latest: %s", cursor.query)
 
         result = cursor.fetchone()
         if not result:
@@ -537,7 +543,7 @@ def insert_itunes_program_itunes_genres(argslist):
 
     with connection.cursor() as cursor:
         execute_values(cur=cursor, sql=query, argslist=argslist)
-        logger.debug("insert_itunes_program_ituens_genres: ", cursor.query)
+        logger.debug("insert_itunes_program_ituens_genres: %s", cursor.query)
 
 
 @sql_lock
@@ -553,7 +559,7 @@ def insert_itunes_genre(genre_id, name):
 
     with connection.cursor() as cursor:
         cursor.execute(query, (genre_id, name, False, now, now))
-        logger.debug("insert_itunes_genre: ", cursor.query)
+        logger.debug("insert_itunes_genre: %s", cursor.query)
 
         itunes_genre_id = cursor.fetchone()
         if not itunes_genre_id:
@@ -618,7 +624,7 @@ def update_program_itunes_internal_category(program_id, category_id):
                 program_id,
             ),
         )
-        logger.debug("update_program_itunes_internal_category: ", cursor.query)
+        logger.debug("update_program_itunes_internal_category: %s", cursor.query)
 
         result = cursor.fetchone()
         if not result:
@@ -810,13 +816,15 @@ def update_program_recovery(
                         program_id,
                     ),
                 )
-                logger.debug("update_program_recovery: products_program ", cursor.query)
+                logger.debug(
+                    "update_program_recovery: products_program %s", cursor.query
+                )
 
                 # recovery episdoes, skip if episode id list empty
                 if episode_ids:
                     cursor.execute(recovery_episode_sql, (nowtime, tuple(episode_ids)))
                     logger.debug(
-                        "update_program_recovery: products_episode ", cursor.query
+                        "update_program_recovery: products_episode %s", cursor.query
                     )
 
                 # recovery episode count data in collectionstatistics
@@ -825,7 +833,7 @@ def update_program_recovery(
                     (episode_count, nowtime, collection_id, program_id),
                 )
                 logger.debug(
-                    "update_program_recovery: products_itunes_collectionstatistics ",
+                    "update_program_recovery: products_itunes_collectionstatistics %s",
                     cursor.query,
                 )
 
