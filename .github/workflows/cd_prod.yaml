@@ -19,7 +19,7 @@ jobs:
   helm-install:
 
     name: Helm install
-    environment: staging
+    environment: prod
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
