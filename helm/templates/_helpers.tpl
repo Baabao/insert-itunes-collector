@@ -26,8 +26,8 @@ app.kubernetes.io/instance: {{.Release.Name}}
 {{- with .Values.annotations}}
 {{- toYaml .}}
 {{- end}}
-cluster: "{{- if eq .Values.global.PROD "production" -}}prod-cluster{{- else if eq .Values.global.PROD "staging" -}}staging-cluster{{- else -}}local-cluster{{- end }}"
-environment: "{{- if eq .Values.global.PROD "production" -}}prod{{- else if eq .Values.global.PROD "staging" -}}staging{{- else -}}local{{- end }}"
+cluster: "{{- if eq .Values.global.PROD "prod" -}}prod-cluster{{- else if eq .Values.global.PROD "staging" -}}staging-cluster{{- else -}}local-cluster{{- end }}"
+environment: "{{- if eq .Values.global.PROD "prod" -}}prod{{- else if eq .Values.global.PROD "staging" -}}staging{{- else -}}local{{- end }}"
 deploymentTime: {{ now | date "2006-01-02T15:04:05" }}
 {{- end -}}
 
@@ -35,7 +35,7 @@ deploymentTime: {{ now | date "2006-01-02T15:04:05" }}
 AWS
 */}}
 {{- define "insert-itunes-collector.aws" -}}
-{{- if or (eq .Values.global.PROD "production") (eq .Values.global.PROD "staging") -}}
+{{- if or (eq .Values.global.PROD "prod") (eq .Values.global.PROD "staging") -}}
 - name: AWS_ACCESS_KEY_ID
   value: {{ required "You must set a value for AWS_ACCESS_KEY_ID on production/staging in values.yaml" .Values.global.AWS_ACCESS_KEY_ID | quote }}
 - name: AWS_SECRET_ACCESS_KEY
@@ -49,7 +49,7 @@ AWS
 Database endpoint
 */}}
 {{- define "insert-itunes-collector.database" -}}
-{{- if or (eq .Values.global.PROD "production") (eq .Values.global.PROD "staging") -}}
+{{- if or (eq .Values.global.PROD "prod") (eq .Values.global.PROD "staging") -}}
 - name: POSTGRES_SECRET_ID
   value: {{ required "You must set a value for POSTGRES_SECRET_ID on production/staging in values.yaml" .Values.global.POSTGRES_SECRET_ID | quote }}
 {{- end -}}
@@ -59,7 +59,7 @@ Database endpoint
 Cache endpoint
 */}}
 {{- define "insert-itunes-collector.cache" -}}
-{{- if or (eq .Values.global.PROD "production") (eq .Values.global.PROD "staging") -}}
+{{- if or (eq .Values.global.PROD "prod") (eq .Values.global.PROD "staging") -}}
 - name: CACHE_ENDPOINT
   value: {{ required "You must set a value for CACHE_ENDPOINT on production/staging in values.yaml" .Values.global.CACHE_ENDPOINT | quote }}
 {{- end -}}
