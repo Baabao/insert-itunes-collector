@@ -36,7 +36,7 @@ def remove_file(fp: str) -> bool:
             return True
         return False
     except Exception as exc:
-        raise FileHandleError(f"unexpected error, {exc}") from exc
+        raise FileHandleError(f"Unexpected error, {exc}") from exc
 
 
 def backup_file(fp: str) -> None:
@@ -44,7 +44,7 @@ def backup_file(fp: str) -> None:
         shutil.copy(fp, f"{fp}.bak")
         time.sleep(0.1)
     except Exception as exc:
-        raise FileHandleError(f"unexpected error, {exc}") from exc
+        raise FileHandleError(f"Unexpected error, {exc}") from exc
 
 
 def restore_file(fp: str) -> None:
@@ -53,7 +53,7 @@ def restore_file(fp: str) -> None:
             shutil.move(f"{fp}.bak", fp)
             time.sleep(0.1)
     except Exception as exc:
-        raise FileHandleError(f"unexpected error, {exc}") from exc
+        raise FileHandleError(f"Unexpected error, {exc}") from exc
 
 
 def read_json(fp: str) -> Union[Dict, List]:
@@ -61,14 +61,14 @@ def read_json(fp: str) -> Union[Dict, List]:
         return json.load(file)
 
 
-def write_json(fp: str, data: Union[List, Dict]) -> None:
+def write_json(fp: str, data: Union[List, Dict], indent: int = None) -> None:
     try:
         with open(fp, "w+", encoding="utf-8") as file:
-            file.write(json.dumps(data, ensure_ascii=False))
+            file.write(json.dumps(data, ensure_ascii=False, indent=indent))
         time.sleep(0.1)
 
     except Exception as exc:
-        raise FileHandleError("unexpected error, %s" % (exc,)) from exc
+        raise FileHandleError(f"Unexpected error, {exc}") from exc
 
 
 def write_xml_with_et(fp: str, string: AnyStr) -> None:
@@ -77,4 +77,4 @@ def write_xml_with_et(fp: str, string: AnyStr) -> None:
         tree = ET.ElementTree(root)
         tree.write(fp)
     except Exception as exc:
-        raise FileHandleError(f"unexpected error, {exc}") from exc
+        raise FileHandleError(f"Unexpected error, {exc}") from exc

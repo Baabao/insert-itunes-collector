@@ -17,10 +17,18 @@ metadata:
     repository: insert-itunes-collector
 spec:
   replicas: 1
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+
   selector:
     matchLabels:
       app.kubernetes.io/name: insert-itunes-collector
       app.kubernetes.io/instance: insert-itunes-collector
+
   template:
     metadata:
       labels:
@@ -38,6 +46,7 @@ spec:
             limits:
               memory: "1025Mi"
               cpu: "300m"
+
           env:
             - name: PROD
               value: "staging"
@@ -66,15 +75,29 @@ spec:
                 secretKeyRef:
                   name: insert-itunes-collector-secret
                   key: cache_endpoint
+
           volumeMounts:
             - name: itunes-collector-volume
               mountPath: "/src/data"
+
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - "/bin/sh"
+                  - "-c"
+                  - "python /src/edit_runner_config.py --continue_execute=false && sleep 1800"
+                  -
+      terminationGracePeriodSeconds: 1800
+
       volumes:
         - name: itunes-collector-volume
           persistentVolumeClaim:
             claimName: itunes-collector-pvc
+
       imagePullSecrets:
         - name: regcred
+
 
 
 

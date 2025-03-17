@@ -30,7 +30,7 @@ dependencies = [
     "sgmllib3k (==1.0.0)",
     "six (==1.14.0)",
     "urllib3 (==1.25.8)",
-    "rich (>=13.9.4,<14.0.0)"
+    "rich (==13.6.0)"
 ]
 
 [tool.poetry]

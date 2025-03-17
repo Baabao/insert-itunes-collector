@@ -6,9 +6,10 @@ from core.db import connection
 def check_conn(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        connection.close_if_unusable_or_obsolete()
-        result = func(*args, **kwargs)
-        connection.close_if_unusable_or_obsolete()
-        return result
+        try:
+            connection.close_if_unusable_or_obsolete()
+            return func(*args, **kwargs)
+        finally:
+            connection.close()
 
     return wrapper

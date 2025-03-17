@@ -9,28 +9,23 @@ from log_helper import setup_logging
 logger = logging.getLogger("runner")
 
 
-
 def execute():
     while True:
         try:
             runner_config = execution.runner
 
             if not runner_config.continue_execute:
+                logger.info("Job will shutdown in 30 seconds.")
+                time.sleep(30)
                 break
 
             time.sleep(runner_config.prepare_interval)
 
-            logger.info(
-                "Job start time: %s",
-                datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            )
+            logger.info("Job starting")
 
             entry_point()
 
-            logger.info(
-                "Job end time: %s",
-                datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            )
+            logger.info("Job ended")
 
             time.sleep(runner_config.post_interval)
 
