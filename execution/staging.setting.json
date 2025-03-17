@@ -13,7 +13,7 @@
   "runner_config": {
     "continue_execute": true,
     "prepare_interval": 10,
-    "post_interval": 60,
+    "post_interval": 1800,
     "process_num": 1
   },
   "logging_config": {
@@ -58,8 +58,8 @@
         "formatter": "simple",
         "filename": "logs/stdout.log",
         "when": "D",
-        "interval": 7,
-        "backupCount": 4,
+        "interval": 1,
+        "backupCount": 14,
         "encoding": "utf8"
       },
       "stderr_log": {
@@ -68,8 +68,8 @@
         "formatter": "verbose",
         "filename": "logs/stderr.log",
         "when": "D",
-        "interval": 7,
-        "backupCount": 13,
+        "interval": 3,
+        "backupCount": 10,
         "encoding": "utf8"
       },
       "debug_log": {
@@ -78,8 +78,8 @@
         "formatter": "verbose",
         "filename": "logs/debug.log",
         "when": "D",
-        "interval": 14,
-        "backupCount": 4,
+        "interval": 3,
+        "backupCount": 10,
         "encoding": "utf8"
       },
       "firehose": {
